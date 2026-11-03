@@ -1,0 +1,12 @@
+theme: TintedGlass
+styleConstants:
+  - ''
+controlStyles:
+  - target: Grid#NotificationCenterGrid
+    styles:
+      - Visibility=Collapsed
+  - target: Grid#ThumbnailImage
+    styles:
+      - MaxHeight=100
+themeResourceVariables:
+  - ''
