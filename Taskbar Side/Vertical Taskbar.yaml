@@ -1,5 +1,5 @@
 taskbarLocation: right
-TaskbarWidth: 44
+TaskbarWidth: 48
 taskbarLocationSecondary: sameAsPrimary
 jumpListAlignment: top
 startMenuAlignment: windowsDefault
