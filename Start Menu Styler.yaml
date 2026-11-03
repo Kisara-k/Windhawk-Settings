@@ -12,6 +12,10 @@ controlStyles:
   - target: StartMenu.PinnedList#StartMenuPinnedList
     styles:
       - Margin=0,-15,0,0
+  - target: Border#AcrylicBorder
+    styles:
+      - Background:=<WindhawkBlur BlurAmount="24" TintColor="#40000000"/>
+      - BorderThickness=0
   - target: Border#ContentBorder@CommonStates > Grid#DroppedFlickerWorkaroundWrapper > Border
     styles:
       - Background@Normal:=<SolidColorBrush Color="Transparent"/>

@@ -1,3 +1,4 @@
+
 theme: TintedGlass
 styleConstants:
   - ''
@@ -5,8 +6,31 @@ controlStyles:
   - target: Grid#NotificationCenterGrid
     styles:
       - Visibility=Collapsed
+
   - target: Grid#ThumbnailImage
     styles:
       - MaxHeight=100
+
+  # Calendar background
+  - target: Grid#CalendarCenterGrid
+    styles:
+      - Background:=<WindhawkBlur BlurAmount="24" TintColor="#40000000"/>
+      - BorderThickness=0
+      - CornerRadius=7
+
+  # Quick Settings background
+  - target: Grid#ControlCenterRegion
+    styles:
+      - Background:=<WindhawkBlur BlurAmount="24" TintColor="#40000000"/>
+      - BorderThickness=0
+      - CornerRadius=7
+
+  # Media player background
+  - target: Grid#MediaTransportControlsRegion
+    styles:
+      - Background:=<WindhawkBlur BlurAmount="24" TintColor="#40000000"/>
+      - BorderThickness=0
+      - CornerRadius=7
+
 themeResourceVariables:
   - ''

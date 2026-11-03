@@ -1,7 +1,8 @@
 
 theme: ''
+styleConstants:
+  - ''
 controlStyles:
-  # Vertical layout: apps slightly below center
   - target: ScrollViewer > ScrollContentPresenter > Border > Grid
     styles:
       - RowDefinitions:=<RowDefinitionCollection><RowDefinition Height="1.3*"/><RowDefinition Height="Auto"/><RowDefinition Height="0.7*"/><RowDefinition Height="Auto"/></RowDefinitionCollection>
@@ -16,13 +17,7 @@ controlStyles:
       - Grid.Row=3
       - VerticalAlignment=Bottom
 
-  # Rounded floating background around the app group
-  - target: Taskbar.TaskbarFrame > Grid#RootGrid
-    styles:
-      - Background:=<WindhawkBlur BlurAmount="18" TintColor="#80000000"/>
-      - CornerRadius=12
-
-  # Hide Windows' default taskbar background
+  # Hide default Windows taskbar background
   - target: Taskbar.TaskbarFrame > Grid#RootGrid > Taskbar.TaskbarBackground > Grid > Rectangle#BackgroundFill
     styles:
       - Visibility=Collapsed
@@ -31,24 +26,34 @@ controlStyles:
     styles:
       - Visibility=Collapsed
 
-  # Rounded backgrounds for individual app buttons
+  # Frosted-glass app dock
+  - target: Taskbar.TaskbarFrame > Grid#RootGrid
+    styles:
+      - Background:=<WindhawkBlur BlurAmount="24" TintColor="#40000000"/>
+      - CornerRadius=7
+      - Padding=0,4,0,4
+
+  # App button backgrounds
   - target: Taskbar.TaskListButtonPanel > Border#BackgroundElement, Taskbar.TaskListLabeledButtonPanel > Border#BackgroundElement, Taskbar.TaskListButtonPanel#ExperienceToggleButtonRootPanel > Border#BackgroundElement
     styles:
-      - Background:=<WindhawkBlur BlurAmount="18" TintColor="#80000000"/>
-      - CornerRadius=12
+      - Background:=<WindhawkBlur BlurAmount="24" TintColor="#40000000"/>
+      - CornerRadius=7
 
-  # Rounded background for system tray and clock
+  # Frosted-glass system tray and clock
   - target: StackPanel#SystemTrayFrameGrid, Grid#SystemTrayFrameGrid
     styles:
-      - Background:=<WindhawkBlur BlurAmount="18" TintColor="#80000000"/>
-      - CornerRadius=12
+      - Background:=<WindhawkBlur BlurAmount="24" TintColor="#40000000"/>
+      - CornerRadius=7
+      - Padding=0,4,0,4
 
-  # Rounded tray overflow popup
+  # Tray overflow popup
   - target: Border#OverflowFlyoutBackgroundBorder
     styles:
-      - Background:=<WindhawkBlur BlurAmount="18" TintColor="#80000000"/>
+      - Background:=<WindhawkBlur BlurAmount="24" TintColor="#40000000"/>
       - BorderThickness=0
-      - CornerRadius=14
+      - CornerRadius=9
 
+themeResourceVariables:
+  - ''
 clickThroughTaskbar: 1
 xamlDiagnosticsHandling: alert
