@@ -1,0 +1,26 @@
+theme: TintedGlass
+disableNewStartMenuLayout: ''
+styleConstants:
+  - ''
+controlStyles:
+  - target: TextBlock#PinnedListHeaderText
+    styles:
+      - Visibility=Collapsed
+  - target: Grid#TopLevelHeader > Grid[2]
+    styles:
+      - Visibility=Collapsed
+  - target: StartMenu.PinnedList#StartMenuPinnedList
+    styles:
+      - Margin=0,-15,0,0
+  - target: Border#ContentBorder@CommonStates > Grid#DroppedFlickerWorkaroundWrapper > Border
+    styles:
+      - Background@Normal:=<SolidColorBrush Color="Transparent"/>
+      - CornerRadius=6
+      - BorderBrush@Pressed:=<SolidColorBrush Color="Transparent"/>
+themeResourceVariables:
+  - ''
+webContentStyles:
+  - target: ''
+    styles:
+      - ''
+webContentCustomJs: ''

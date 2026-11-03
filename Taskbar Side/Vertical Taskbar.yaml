@@ -1,0 +1,8 @@
+taskbarLocation: right
+TaskbarWidth: 40
+taskbarLocationSecondary: sameAsPrimary
+jumpListAlignment: top
+startMenuAlignment: windowsDefault
+startMenuAnimationAdjust: 0
+clockContainerHeight: 0
+useNativeTaskbar: 1

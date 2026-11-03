@@ -1,0 +1,38 @@
+theme: DockLike
+styleConstants:
+  - ''
+controlStyles:
+  - target: ScrollViewer > ScrollContentPresenter > Border > Grid
+    styles:
+      - ColumnDefinitions:=<ColumnDefinitionCollection><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/><ColumnDefinition Width="*"/></ColumnDefinitionCollection>
+  - target: SystemTray.SystemTrayFrame
+    styles:
+      - Grid.Column=0
+      - HorizontalAlignment=Left
+      - Margin=100,0,0,0
+  - target: Taskbar.TaskbarFrame
+    styles:
+      - Grid.Column=1
+      - HorizontalAlignment=Center
+      - Margin=400,0,-400,0
+  - target: StackPanel#SystemTrayFrameGrid, Grid#SystemTrayFrameGrid
+    styles:
+      - Margin=-8,-10,-8,-10
+  - target: Taskbar.TaskbarFrame > Grid#RootGrid
+    styles:
+      - Background:=<WindhawkBlur BlurAmount="18" TintColor="#80000000"/>
+      - CornerRadius=8
+      - Margin=0,2,0,0
+      - Padding=2,0,2,0
+  - target: StackPanel#SystemTrayFrameGrid, Grid#SystemTrayFrameGrid
+    styles:
+      - Background:=<WindhawkBlur BlurAmount="18" TintColor="#80000000"/>
+  - target: Border#OverflowFlyoutBackgroundBorder
+    styles:
+      - Background:=<WindhawkBlur BlurAmount="18" TintColor="#80000000"/>
+      - BorderThickness=0
+      - CornerRadius=14
+themeResourceVariables:
+  - ''
+clickThroughTaskbar: 1
+xamlDiagnosticsHandling: alert

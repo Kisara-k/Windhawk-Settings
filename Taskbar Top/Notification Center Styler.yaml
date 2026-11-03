@@ -1,0 +1,25 @@
+theme: TintedGlass
+styleConstants:
+  - ''
+controlStyles:
+  - target: Grid#NotificationCenterGrid
+    styles:
+      - Visibility=Collapsed
+      - VerticalAlignment=Stretch
+  - target: Grid#ThumbnailImage
+    styles:
+      - MaxHeight=100
+  - target: Grid#CalendarCenterGrid
+    styles:
+      - Margin=0,12,0,861
+  - target: ControlCenter.ControlCenterPage
+    styles:
+      - VerticalAlignment=Stretch
+  - target: ControlCenter.ControlCenterPage > Grid#RootGrid
+    styles:
+      - VerticalAlignment=Stretch
+  - target: ControlCenter.ControlCenterPage > Grid#RootGrid > Grid#RootContent
+    styles:
+      - VerticalAlignment=Top
+themeResourceVariables:
+  - ''
