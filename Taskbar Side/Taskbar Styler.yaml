@@ -11,13 +11,11 @@ controlStyles:
     styles:
       - Grid.Row=1
       - VerticalAlignment=Center
-      - Margin=0,0,6,0
 
   - target: SystemTray.SystemTrayFrame
     styles:
       - Grid.Row=3
       - VerticalAlignment=Bottom
-      - Margin=0,0,4,0
 
   # Hide default Windows taskbar background
   - target: Taskbar.TaskbarFrame > Grid#RootGrid > Taskbar.TaskbarBackground > Grid > Rectangle#BackgroundFill
@@ -34,7 +32,6 @@ controlStyles:
       - Background:=<WindhawkBlur BlurAmount="24" TintColor="#40000000"/>
       - CornerRadius=7
       - Padding=0,4,0,4
-      - Margin=0,0,6,0
 
   # App button backgrounds
   - target: Taskbar.TaskListButtonPanel > Border#BackgroundElement, Taskbar.TaskListLabeledButtonPanel > Border#BackgroundElement, Taskbar.TaskListButtonPanel#ExperienceToggleButtonRootPanel > Border#BackgroundElement
@@ -48,7 +45,6 @@ controlStyles:
       - Background:=<WindhawkBlur BlurAmount="24" TintColor="#40000000"/>
       - CornerRadius=7
       - Padding=0,4,0,4
-      - Margin=0,0,4,0
 
   # Tray overflow popup
   - target: Border#OverflowFlyoutBackgroundBorder

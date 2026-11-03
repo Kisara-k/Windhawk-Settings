@@ -1,5 +1,5 @@
 taskbarLocation: right
-TaskbarWidth: 48
+TaskbarWidth: 44 # do not set this to 45 interferes with click through?
 taskbarLocationSecondary: sameAsPrimary
 jumpListAlignment: top
 startMenuAlignment: windowsDefault
