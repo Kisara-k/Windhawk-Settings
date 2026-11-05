@@ -1,59 +1,51 @@
-
 theme: ''
 styleConstants:
-  - ''
+  - rightMargin=10
+  - iconOffset=5
 controlStyles:
+  - target: Taskbar.TaskListButton#TaskListButton > Grid#IconPanel, Taskbar.TaskListButton#TaskListButton > Taskbar.TaskListLabeledButtonPanel#IconPanel
+    styles:
+      - RenderTransform:=<TranslateTransform X="-$iconOffset"/>
   - target: ScrollViewer > ScrollContentPresenter > Border > Grid
     styles:
       - RowDefinitions:=<RowDefinitionCollection><RowDefinition Height="1.3*"/><RowDefinition Height="Auto"/><RowDefinition Height="0.7*"/><RowDefinition Height="Auto"/></RowDefinitionCollection>
-
   - target: Taskbar.TaskbarFrame
     styles:
       - Grid.Row=1
       - VerticalAlignment=Center
-
   - target: SystemTray.SystemTrayFrame
     styles:
       - Grid.Row=3
       - VerticalAlignment=Bottom
-
-  # Hide default Windows taskbar background
   - target: Taskbar.TaskbarFrame > Grid#RootGrid > Taskbar.TaskbarBackground > Grid > Rectangle#BackgroundFill
     styles:
       - Visibility=Collapsed
-
   - target: Rectangle#BackgroundStroke
     styles:
       - Visibility=Collapsed
-
-  # Frosted-glass app dock
   - target: Taskbar.TaskbarFrame > Grid#RootGrid
     styles:
       - Background:=<WindhawkBlur BlurAmount="24" TintColor="#40000000"/>
       - CornerRadius=7
       - Padding=0,4,0,4
-
-  # App button backgrounds
+      - Margin=0,0,$rightMargin,0
   - target: Taskbar.TaskListButtonPanel > Border#BackgroundElement, Taskbar.TaskListLabeledButtonPanel > Border#BackgroundElement, Taskbar.TaskListButtonPanel#ExperienceToggleButtonRootPanel > Border#BackgroundElement
     styles:
       - Background:=<WindhawkBlur BlurAmount="24" TintColor="#40000000"/>
       - CornerRadius=7
-
-  # Frosted-glass system tray and clock
   - target: StackPanel#SystemTrayFrameGrid, Grid#SystemTrayFrameGrid
     styles:
       - Background:=<WindhawkBlur BlurAmount="24" TintColor="#40000000"/>
       - CornerRadius=7
-      - Padding=0,4,0,4
-
-  # Tray overflow popup
+      - Padding=0,4,0,-8
+      - Margin=0,0,$rightMargin,4
   - target: Border#OverflowFlyoutBackgroundBorder
     styles:
       - Background:=<WindhawkBlur BlurAmount="24" TintColor="#40000000"/>
       - BorderThickness=0
       - CornerRadius=9
-
 themeResourceVariables:
   - ''
 clickThroughTaskbar: 1
-xamlDiagnosticsHandling: alert
+clickThroughRightGap: 11
+xamlDiagnosticsHandling: block
