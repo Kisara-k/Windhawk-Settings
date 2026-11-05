@@ -1,6 +1,6 @@
 // ==WindhawkMod==
-// @id              windows-11-taskbar-styler
-// @name            Windows 11 Taskbar Styler
+// @id              windows-11-taskbar-styler-fork
+// @name            Windows 11 Taskbar Styler - Fork
 // @description     Customize the taskbar with themes contributed by others or create your own
 // @version         1.10
 // @author          m417z
@@ -604,6 +604,12 @@ from the **TranslucentTB** project.
     Make the empty parts of the taskbar click-through. Only the area with the
     taskbar buttons and the system tray stays visible and clickable. Mainly
     useful for dock themes such as DockLike.
+- clickThroughRightGap: 3
+  $name: Right-side click-through gap (DIPs)
+  $description: >-
+    Width of the rightmost non-interactive strip in device-independent pixels.
+    Use 0 to disable the extra clip. Keep it no greater than the visual right
+    margin to avoid clipping rounded background corners.
 - xamlDiagnosticsHandling: alert
   $name: XAML diagnostics consumer handling
   $description: >-
@@ -11521,6 +11527,7 @@ enum class XamlDiagnosticsHandling {
 
 struct {
     bool clickThroughTaskbar;
+    int clickThroughRightGap;
     XamlDiagnosticsHandling xamlDiagnosticsHandling;
 } g_settings;
 
@@ -17944,6 +17951,7 @@ void UpdateClickThroughRegion(ClickThroughTaskbarState& state) {
     signature.push_back(QuantizeLayoutSize(scale * 100));
     appendRect(signature, taskbarFrameRect);
     appendRect(signature, systemTrayFrameRect);
+    signature.push_back(g_settings.clickThroughRightGap);
 
     RECT tlRect;
     if (!GetWindowRect(topLevelWnd, &tlRect)) {
@@ -18014,7 +18022,6 @@ void UpdateClickThroughRegion(ClickThroughTaskbarState& state) {
     }
 
     RECT rgnBox = tf;
-
     if (systemTrayFrameRect) {
         RECT st = toWindowRect(*systemTrayFrameRect);
         if (HRGN trayRgn =
@@ -18024,6 +18031,34 @@ void UpdateClickThroughRegion(ClickThroughTaskbarState& state) {
             UnionRect(&rgnBox, &rgnBox, &st);
         }
     }
+
+    // Exclude the configured right-edge strip from the interactive region.
+    // The XAML background should end before this boundary so its rounded
+    // corners are not clipped by the Win32 window region.
+    const double rightGapDip = g_settings.clickThroughRightGap;
+
+    int rightGapPx = std::clamp(
+        static_cast<int>(std::lround(rightGapDip * scale)),
+        0,
+        tlWidth
+    );
+
+    if (rightGapPx > 0) {
+        HRGN gapRgn = CreateRectRgn(
+            tlWidth - rightGapPx,
+            0,
+            tlWidth,
+            tlHeight
+        );
+
+        if (gapRgn) {
+            CombineRgn(rgn, rgn, gapRgn, RGN_DIFF);
+            DeleteObject(gapRgn);
+        }
+    }
+
+    // Track the bounding rectangle of the modified region.
+    GetRgnBox(rgn, &rgnBox);
 
     Wh_Log(L"Applying region to %08X, dpi=%u, rasterization scale=%f",
            (DWORD)(ULONG_PTR)topLevelWnd, islandDpi, rasterizationScale);
@@ -20597,6 +20632,8 @@ void StopStatsTimer() {
 
 void LoadSettings() {
     g_settings.clickThroughTaskbar = Wh_GetIntSetting(L"clickThroughTaskbar");
+    g_settings.clickThroughRightGap =
+        std::max(0, Wh_GetIntSetting(L"clickThroughRightGap"));
 
     PCWSTR xamlDiagnosticsHandling =
         Wh_GetStringSetting(L"xamlDiagnosticsHandling");
