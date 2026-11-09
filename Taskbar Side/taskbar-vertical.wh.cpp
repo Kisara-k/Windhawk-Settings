@@ -1,12 +1,17 @@
 // ==WindhawkMod==
-// @id              taskbar-vertical
-// @name            Vertical Taskbar for Windows 11
+// @id              taskbar-vertical-fork
+// @name            Vertical Taskbar for Windows 11 - Fork
 // @description     Finally, the missing vertical taskbar option for Windows 11! Move the taskbar to the left or right side of the screen.
 // @version         1.5
 // @author          m417z
 // @github          https://github.com/m417z
 // @twitter         https://twitter.com/m417z
 // @homepage        https://m417z.com/
+// @include         brave.exe
+// @include         chrome.exe
+// @include         msedge.exe
+// @include         Code.exe
+// @include         Code - Insiders.exe
 // @include         explorer.exe
 // @include         StartMenuExperienceHost.exe
 // @include         ShellExperienceHost.exe
@@ -119,6 +124,13 @@ With labels:
     Set to zero to use the default height value, setting a custom height can be
     useful for a customized clock with a non-standard size. Not used with the
     native vertical taskbar.
+- fixChromiumMaximizedGap: true
+  $name: Remove side gaps in maximized Chromium apps
+  $description: >-
+    Suppress Chromium/Electron auto-hidden taskbar detection in Brave, Chrome,
+    Edge, VS Code, and VS Code Insiders to prevent the maximized-window
+    2-pixel client-area inset on the left or right. Fully restart affected
+    applications after changing this setting.
 - useNativeTaskbar: true
   $name: Use the native taskbar when possible
   $description: >-
@@ -133,6 +145,7 @@ With labels:
 #include <initguid.h>  // must come before uiautomation.h
 
 #include <dwmapi.h>
+#include <commctrl.h>
 #include <roapi.h>
 #include <shellscalingapi.h>
 #include <uiautomation.h>
@@ -191,6 +204,7 @@ struct {
     bool startMenuAnimationAdjust;
     int clockContainerHeight;
     bool useNativeTaskbar;
+    bool fixChromiumMaximizedGap;
 } g_settings;
 
 constexpr int kDefaultClockContainerHeight = 40;
@@ -200,6 +214,7 @@ enum class Target {
     StartMenuExperienceHost,
     ShellExperienceHost,
     ShellHost,  // From Win11 24H2.
+    ChromiumBrowser,
 };
 
 Target g_target;
@@ -6408,6 +6423,7 @@ void LoadSettings() {
     g_settings.clockContainerHeight = Wh_GetIntSetting(L"clockContainerHeight");
 
     g_settings.useNativeTaskbar = Wh_GetIntSetting(L"useNativeTaskbar");
+    g_settings.fixChromiumMaximizedGap = Wh_GetIntSetting(L"fixChromiumMaximizedGap");
 }
 
 // Explorer destroys the secondary taskbars when it reads that the taskbar isn't
@@ -7320,6 +7336,36 @@ bool HookTaskbarDllSymbols() {
     return true;
 }
 
+// Chromium queries SHAppBarMessage when sizing maximized windows. Hide the
+// auto-hide state from browser processes only; leave Explorer and the real
+// taskbar state untouched. This is the behavior that fixed Brave in v8.
+using SHAppBarMessage_t = decltype(&SHAppBarMessage);
+SHAppBarMessage_t SHAppBarMessage_ChromiumOriginal;
+
+bool ShouldHideAutoHideSideFromChromium() {
+    return !g_unloading && g_settings.fixChromiumMaximizedGap;
+}
+
+UINT_PTR WINAPI SHAppBarMessage_ChromiumHook(DWORD message, PAPPBARDATA data) {
+    const bool enabled = ShouldHideAutoHideSideFromChromium();
+    const bool side = data &&
+        ((data->uEdge == ABE_LEFT &&
+          (g_settings.taskbarLocation == TaskbarLocation::left ||
+           g_settings.taskbarLocationSecondary == TaskbarLocation::left)) ||
+         (data->uEdge == ABE_RIGHT &&
+          (g_settings.taskbarLocation == TaskbarLocation::right ||
+           g_settings.taskbarLocationSecondary == TaskbarLocation::right)));
+    if (enabled && side &&
+        (message == ABM_GETAUTOHIDEBAR || message == ABM_GETAUTOHIDEBAREX)) {
+        return 0;
+    }
+    UINT_PTR result = SHAppBarMessage_ChromiumOriginal(message, data);
+    if (enabled && message == ABM_GETSTATE) {
+        return result & ~ABS_AUTOHIDE;
+    }
+    return result;
+}
+
 BOOL Wh_ModInit() {
     Wh_Log(L">");
 
@@ -7346,6 +7392,12 @@ BOOL Wh_ModInit() {
                     g_target = Target::ShellExperienceHost;
                 } else if (_wcsicmp(moduleFileName, L"ShellHost.exe") == 0) {
                     g_target = Target::ShellHost;
+                } else if (_wcsicmp(moduleFileName, L"brave.exe") == 0 ||
+                           _wcsicmp(moduleFileName, L"chrome.exe") == 0 ||
+                           _wcsicmp(moduleFileName, L"msedge.exe") == 0 ||
+                           _wcsicmp(moduleFileName, L"Code.exe") == 0 ||
+                           _wcsicmp(moduleFileName, L"Code - Insiders.exe") == 0) {
+                    g_target = Target::ChromiumBrowser;
                 }
             } else {
                 Wh_Log(L"GetModuleFileName returned an unsupported path");
@@ -7360,6 +7412,14 @@ BOOL Wh_ModInit() {
         g_sessionNativeVerticalTaskbar = &g_nativeVerticalTaskbar[sessionId];
     } else {
         Wh_Log(L"No shared native vertical taskbar state for this session");
+    }
+
+    if (g_target == Target::ChromiumBrowser) {
+        WindhawkUtils::SetFunctionHook(SHAppBarMessage,
+                                       SHAppBarMessage_ChromiumHook,
+                                       &SHAppBarMessage_ChromiumOriginal);
+        Wh_Log(L"Chromium appbar hook installed");
+        return TRUE;
     }
 
     if (g_target == Target::StartMenuExperienceHost) {
@@ -7591,6 +7651,12 @@ BOOL Wh_ModSettingsChanged(BOOL* bReload) {
     bool prevUseNativeTaskbar = g_settings.useNativeTaskbar;
 
     LoadSettings();
+
+    if (g_target == Target::ChromiumBrowser) {
+        // Reload the hook when the browser-side behavior setting changes.
+        *bReload = TRUE;
+        return TRUE;
+    }
 
     if (g_target == Target::Explorer) {
         // The taskbar implementation is chosen when the mod is initialized.

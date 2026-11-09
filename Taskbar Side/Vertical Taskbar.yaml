@@ -5,4 +5,5 @@ jumpListAlignment: center
 startMenuAlignment: windowsDefault
 startMenuAnimationAdjust: 0
 clockContainerHeight: 0
+fixChromiumMaximizedGap: 1
 useNativeTaskbar: 1
